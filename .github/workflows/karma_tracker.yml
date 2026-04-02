@@ -36,5 +36,17 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add data/karma_history.json images/karma_plot.png
-        git commit -m "Update karma history and plot" || exit 0
-        git push
+
+        # Check if last commit was made by this action
+        LAST_COMMIT_MSG=$(git log -1 --pretty=%B)
+        LAST_COMMIT_AUTHOR=$(git log -1 --pretty=%an)
+
+        if [ "$LAST_COMMIT_MSG" = "Update karma history and plot" ] && [ "$LAST_COMMIT_AUTHOR" = "GitHub Action" ]; then
+          # Amend the last commit instead of creating a new one
+          git commit --amend --no-edit || exit 0
+          git push --force-with-lease
+        else
+          # Create a new commit (first time or after manual commits)
+          git commit -m "Update karma history and plot" || exit 0
+          git push
+        fi
