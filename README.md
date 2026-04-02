@@ -32,5 +32,35 @@ python src/plot_generator.py
 - Karma history is stored in `data/karma_history.json`
 - Plots are saved in `images/karma_plot.png`
 
+## Maintenance
+
+### Cleaning Git History
+
+Since the workflow commits data files daily, the git history can grow large with hundreds of commits. The repository includes a script to clean this up:
+
+```bash
+./clean_history.sh
+```
+
+**What it does:**
+
+1. Saves the current versions of `karma_history.json` and `karma_plot.png`
+2. Uses `git filter-branch` to remove these files from all historical commits
+3. Cleans up git references and runs garbage collection to reclaim space
+4. Restores the current versions and creates a fresh commit
+
+Note: The script rewrites git history. It may break things. Make sure you have a backup before running it (e.g. the upstream GitHub repository serves as your backup).
+
+**After running the script:**
+
+Once you have cleaned the history, you will need to force push the changes to the remote repository to update it. Note that unless you have another backup this step is irreversible, so make sure you have a complete karma history JSON file before proceeding.
+
+```bash
+# Force push to update the remote repository
+git push origin --force --all
+git push origin --force --tags
+```
+
+
 ## License
 Apache 2.0
